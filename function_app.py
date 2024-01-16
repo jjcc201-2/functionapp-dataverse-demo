@@ -22,14 +22,17 @@ def HttpExample(req: func.HttpRequest) -> func.HttpResponse:
 
     logging.info('Python HTTP trigger function processed a request.')
 
+
     CLIENT_SECRET = os.environ["CLIENT_SECRET"]  
     CLIENT_ID = os.environ["CLIENT_ID"]
     AUTHORITY = os.environ["AUTHORITY"]  
+    DYNAMICS_URL = os.environ["DYNAMICS_URL"]
 
     config = {
     "authority": AUTHORITY,
     "client_id": CLIENT_ID,    
-    "client_secret": CLIENT_SECRET
+    "client_secret": CLIENT_SECRET,
+    "dynamics_url" : DYNAMICS_URL
     }
 
     # Initialize the MSAL confidential client
@@ -38,7 +41,7 @@ def HttpExample(req: func.HttpRequest) -> func.HttpResponse:
                                         client_credential=config["client_secret"])
     
     # Acquire an access token for the app itself
-    result = app.acquire_token_for_client(scopes=["https://org5e77ac3d.crm11.dynamics.com/.default"])
+    result = app.acquire_token_for_client(scopes=[config["dynamics_url"]+"/.default"])
 
 
     bearer_token = extract_token(result)   
@@ -78,7 +81,7 @@ def HttpExample(req: func.HttpRequest) -> func.HttpResponse:
         logging.info('lastname')      
         contactsdata={ "firstname": firstname , "lastname": lastname }
         try:
-            crmres = requests.post('https://org5e77ac3d.crm11.dynamics.com/api/data/v9.2/contacts', 
+            crmres = requests.post(config["dynamics_url"]+"/api/data/v9.2/contacts", 
                        headers=crmrequestheaders, 
                        data=json.dumps(contactsdata))
             return func.HttpResponse(f"Success: {crmres}")  
