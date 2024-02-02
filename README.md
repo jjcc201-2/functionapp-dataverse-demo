@@ -1,4 +1,4 @@
-# Functionapp-dataverse-demi
+# Functionapp-dataverse-demo
 
 ## Description
 
